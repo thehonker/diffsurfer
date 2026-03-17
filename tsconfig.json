@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": ["es2024", "dom"],
+    "module": "es2022",
+    "outDir": "./dist",
+    "resolveJsonModule": false,
+    "rootDir": "./src",
+    "strict": true,
+    "target": "es2024",
+    "useUnknownInCatchVariables": false,
+    "declaration": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.mts", "src/**/*.d.ts", "types/**/*.d.mts"],
+  "exclude": ["node_modules", "dist"]
+}

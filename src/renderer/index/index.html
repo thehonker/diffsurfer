@@ -1,0 +1,849 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>diffsurfer</title>
+    <!-- Theme styles will be loaded dynamically -->
+    <link id="theme-link" rel="stylesheet" href="../../themes/light.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+          Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+          Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      .header {
+        height: var(--header-height);
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        z-index: 100;
+        position: relative;
+        -webkit-app-region: drag; /* Make entire header draggable */
+      }
+
+      .repo-info {
+        position: relative;
+        z-index: 110;
+        width: 100%;
+      }
+
+      /* Make buttons and selects not draggable */
+      .repo-details button,
+      .repo-details select,
+      .repo-details input,
+      .loading-container,
+      .repo-details {
+        -webkit-app-region: no-drag; /* Exclude controls from drag region */
+      }
+
+      .loading-spinner {
+        border: 2px solid var(--border-color);
+        border-top: 2px solid var(--btn-primary-bg);
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+        display: none;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        display: none;
+      }
+
+      .loaded-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        display: none;
+      }
+
+      .header h1 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+      }
+
+      .repo-info {
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+
+      .loading-container {
+        display: flex;
+        align-items: center;
+        margin-right: auto;
+      }
+
+      /* Platform-specific adjustments */
+      .platform-mac .loading-container {
+        margin-left: 80px; /* Space for traffic lights on macOS */
+      }
+
+      .platform-windows .loading-container,
+      .platform-linux .loading-container {
+        margin-left: 10px;
+      }
+
+      .repo-details {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-left: 80px; /* Space for traffic lights on macOS */
+      }
+
+      .repo-info select {
+        height: 24px;
+        font-size: 0.8rem;
+        /* Hide dropdown arrows */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      /* Specifically target the select elements with IDs */
+      #branch-select,
+      #commit-select,
+      #theme-selector {
+        /* Hide dropdown arrows */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding-right: 10px; /* Add some padding to prevent text overlap */
+      }
+
+      .repo-path {
+        font-size: 0.7rem;
+        color: var(--text-tertiary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+      }
+
+      .repo-path:hover {
+        color: var(--btn-primary-bg);
+        text-decoration: underline;
+      }
+
+      #repo-local-path {
+        margin-left: 10px;
+      }
+
+      #theme-selector {
+        margin-right: 10px;
+        padding: 2px 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      #branch-select {
+        margin-right: 10px;
+        padding: 2px 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        max-width: 200px;
+      }
+
+      #commit-select {
+        margin-right: 10px;
+        padding: 2px 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        max-width: 300px;
+      }
+
+      .clear-repo-btn {
+        padding: 4px 8px;
+        background-color: var(--btn-danger-bg);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+
+      .clear-repo-btn:hover {
+        background-color: var(--btn-danger-hover);
+      }
+
+      .jump-to-diff-btn {
+        padding: 4px 8px;
+        background-color: var(--btn-primary-bg);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        margin-right: 10px;
+      }
+
+      .jump-to-diff-btn:hover {
+        background-color: var(--btn-primary-hover);
+      }
+
+      .main-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: var(--sidebar-width);
+        background-color: var(--bg-secondary);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .sidebar-header {
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: bold;
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+      }
+
+      .tree-view {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2px 0;
+      }
+
+      .tree-item {
+        padding: 2px 8px;
+        cursor: pointer;
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+
+      .tree-item.dir {
+        font-weight: bold;
+      }
+
+      .tree-item.file {
+        /* Padding handled dynamically by JavaScript to match directory indentation */
+      }
+
+      .tree-item.dir.expanded::before {
+        content: '▼ ';
+      }
+
+      .tree-item.dir.collapsed::before {
+        content: '▶ ';
+      }
+
+      .tree-item.file::before {
+        content: ''; /* No placeholder needed since we adjust padding in JavaScript */
+      }
+
+      /* Hide children of collapsed directories */
+      .tree-children.collapsed {
+        display: none;
+      }
+
+      /* Show children of expanded directories */
+      .tree-children.expanded {
+        display: block;
+      }
+
+      .file-stats {
+        margin-left: 5px;
+        font-size: 0.7rem;
+        font-weight: normal;
+      }
+
+      .file-stats.current {
+        color: #666666;
+      }
+
+      .file-stats.current::before {
+        content: '(';
+      }
+
+      .file-stats.current::after {
+        content: ')';
+      }
+
+      .file-stats.current .additions {
+        color: green;
+      }
+
+      .file-stats.current .deletions {
+        color: red;
+      }
+
+      .file-stats.nearby {
+        color: blue;
+      }
+
+      .file-stats.nearby::before {
+        content: '(';
+      }
+
+      .file-stats.nearby::after {
+        content: ')';
+      }
+
+      .file-stats.future {
+        color: orange;
+      }
+
+      .file-stats.past {
+        color: orange;
+      }
+
+      .dir-stats {
+        margin-left: 5px;
+        font-size: 0.7rem;
+        font-weight: normal;
+      }
+
+      .dir-stats .file-stats {
+        margin: 0 2px;
+      }
+
+      .dir-stats .file-stats.current {
+        color: var(--dir-stats-current);
+      }
+
+      .dir-stats .file-stats.changed-prev-1 {
+        color: var(--dir-stats-prev-1);
+      }
+
+      .dir-stats .file-stats.changed-prev-2 {
+        color: var(--dir-stats-prev-2);
+      }
+
+      .dir-stats .file-stats.changed-prev-3 {
+        color: var(--dir-stats-prev-3);
+      }
+
+      .dir-stats .file-stats.changed-next-1 {
+        color: var(--dir-stats-next-1);
+      }
+
+      .dir-stats .file-stats.changed-next-2 {
+        color: var(--dir-stats-next-2);
+      }
+
+      .dir-stats .file-stats.changed-next-3 {
+        color: var(--dir-stats-next-3);
+      }
+
+      .tree-item:hover {
+        background-color: var(--tree-item-hover);
+      }
+
+      .tree-item.selected {
+        background-color: var(--tree-item-selected);
+        color: white;
+      }
+
+      .tree-item.changed {
+        font-weight: bold;
+        background-color: var(--tree-item-changed);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-current {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-current);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-prev-1 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-prev-1);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-prev-2 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-prev-2);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-prev-3 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-prev-3);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-next-1 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-next-1);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-next-2 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-next-2);
+        color: var(--text-highlight);
+      }
+
+      .tree-item.changed-next-3 {
+        font-weight: bold;
+        background-color: var(--tree-item-changed-next-3);
+        color: var(--text-highlight);
+      }
+
+      .diff-view {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .commit-selector {
+        height: var(--header-height);
+        padding: 0 15px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--bg-tertiary);
+        display: flex;
+        align-items: center;
+        color: var(--text-primary);
+      }
+
+      .commit-selector label {
+        margin-right: 10px;
+      }
+
+      .commit-selector select {
+        flex: 1;
+        padding: 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      /* Horizontal timeline styles */
+      .timeline-container {
+        margin: 0;
+        overflow-x: auto;
+        padding: 5px;
+        flex-shrink: 0;
+        /* Overlay timeline on top of diff content */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        height: 140px;
+        /* Create a pseudo-element for the backdrop blur with gradient mask */
+        isolation: isolate;
+        /* Clip the blur effect to this container */
+        clip-path: inset(0);
+      }
+
+      .timeline {
+        display: flex;
+        position: relative;
+        align-items: flex-end;
+        min-height: auto;
+        /* Fix height to prevent jumping during card selection */
+        height: 100%;
+        /* Ensure the timeline content is above the backdrop blur */
+        z-index: 1;
+      }
+
+      .timeline-blur {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        backdrop-filter: blur(8px);
+        /* Create a smoother gradient blur effect - only fade downwards */
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(0, 0, 0, 0.3) 15%,
+          rgba(0, 0, 0, 0.7) 30%,
+          black 50%,
+          black 100%
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(0, 0, 0, 0.3) 15%,
+          rgba(0, 0, 0, 0.7) 30%,
+          black 50%,
+          black 100%
+        );
+        z-index: 5; /* Place behind the timeline content but above diff */
+        pointer-events: none; /* Ensure it doesn't interfere with interactions */
+      }
+
+      .commit-card {
+        background: var(--commit-card-bg);
+        border: 1px solid var(--commit-card-border);
+        border-radius: 4px;
+        padding: 4px;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        text-align: center;
+        width: 100px;
+        height: 80px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        color: var(--text-primary);
+        transform: translateZ(0);
+        /* Ensure cards take up minimal vertical space */
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* Ensure cards appear above backdrop blur */
+        z-index: 2;
+        /* Prevent backdrop filter from affecting card content */
+        isolation: isolate;
+      }
+
+      .commit-card:hover {
+        box-shadow: 0 4px 12px var(--shadow-hover);
+      }
+
+      .commit-card.collapsed {
+        background: var(--commit-card-bg);
+        border: 1px solid var(--commit-card-border);
+        border-radius: 4px;
+        padding: 2px 4px;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        text-align: center;
+        width: 40px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateZ(0);
+        flex-shrink: 0;
+        /* Ensure cards appear above backdrop blur */
+        z-index: 2;
+        /* Prevent backdrop filter from affecting card content */
+        isolation: isolate;
+      }
+
+      .commit-card.collapsed:hover {
+        box-shadow: 0 4px 12px var(--shadow-hover);
+      }
+
+      .commit-card.collapsed .additions,
+      .commit-card.collapsed .deletions {
+        font-family: monospace;
+        font-size: 0.7em;
+        font-weight: bold;
+      }
+
+      .commit-card.collapsed .additions {
+        color: var(--commit-additions);
+      }
+
+      .commit-card.collapsed .deletions {
+        color: var(--commit-deletions);
+      }
+
+      .commit-card.collapsed .no-stats {
+        font-size: 0.6em;
+        color: var(--text-tertiary);
+      }
+
+      .commit-stats {
+        margin-top: 3px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .commit-stats .additions,
+      .commit-stats .deletions {
+        font-family: monospace;
+        font-size: 0.7em;
+        font-weight: bold;
+      }
+
+      .commit-stats .additions {
+        color: var(--commit-additions);
+      }
+
+      .commit-stats .deletions {
+        color: var(--commit-deletions);
+      }
+
+      .commit-hash {
+        font-family: monospace;
+        color: var(--btn-primary-bg);
+        font-size: 0.7em;
+        font-weight: bold;
+      }
+
+      .commit-message {
+        font-size: 0.7em;
+        margin: 3px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .commit-date {
+        color: var(--text-tertiary);
+        font-size: 0.6em;
+      }
+
+      .diff-content {
+        flex: 1;
+        overflow: auto;
+        padding: 15px;
+        background-color: var(--bg-secondary);
+        font-family: monospace;
+        white-space: pre-wrap;
+        color: var(--text-primary);
+        /* Account for fixed height timeline overlay */
+        padding-bottom: 120px;
+      }
+
+      .line-number {
+        color: #999;
+        margin-right: 10px;
+        user-select: none;
+      }
+
+      .diff-line {
+        padding: 1px 0;
+      }
+
+      .diff-line.added {
+        background-color: var(--diff-added);
+      }
+
+      .diff-line.removed {
+        background-color: var(--diff-removed);
+      }
+
+      .diff-line.header {
+        font-weight: bold;
+        background-color: var(--bg-tertiary);
+      }
+
+      /* Project loading section */
+      .project-loader-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .project-loader {
+        background-color: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px var(--shadow-color);
+        width: 500px;
+        max-width: 90vw;
+        color: var(--text-primary);
+      }
+
+      .project-loader h2 {
+        margin-top: 0;
+        color: var(--text-primary);
+      }
+
+      .project-loader input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .project-loader button {
+        padding: 10px 20px;
+        background-color: var(--btn-primary-bg);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .project-loader button:hover {
+        background-color: var(--btn-primary-hover);
+      }
+
+      /* Loading and error indicators */
+      .loading-indicator,
+      .error-message {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .error-message {
+        color: red;
+        display: none;
+      }
+
+      .loading-indicator {
+        display: none;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="header">
+        <div id="repo-info" class="repo-info hidden">
+          <div class="loading-container">
+            <span class="loading-text" id="loading-text">Loading...</span>
+            <div class="loading-spinner" id="loading-spinner"></div>
+            <span class="loaded-text" id="loaded-text" style="display: none"
+              >Ready.</span
+            >
+          </div>
+          <div class="repo-details">
+            <span id="repo-remote" class="repo-path"></span>
+            <span id="repo-local-path" class="repo-path"></span>
+            <select id="branch-select">
+              <!-- Branches will be populated here -->
+            </select>
+            <select id="commit-select">
+              <!-- Commits will be populated here -->
+            </select>
+            <select id="theme-selector">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+            <button id="jump-to-diff-btn" class="jump-to-diff-btn">
+              Jump to Diff
+            </button>
+            <button id="clear-repo-btn" class="clear-repo-btn">
+              Close Repo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="project-loader-container" class="project-loader-container">
+        <div class="project-loader">
+          <h2>Load Repository</h2>
+          <div>
+            <label for="repo-url">Repository URL (file:// or git://):</label>
+            <input
+              type="text"
+              id="repo-url"
+              placeholder="file:///path/to/repo or git://github.com/user/repo"
+            />
+          </div>
+          <button id="load-repo-btn">Load Repository</button>
+          <div id="loading-indicator" class="loading-indicator">
+            <span>Loading...</span>
+          </div>
+          <div id="error-message" class="error-message"></div>
+        </div>
+      </div>
+
+      <div id="main-content" class="main-content hidden">
+        <div class="sidebar">
+          <div class="sidebar-header">Files</div>
+          <div id="tree-view" class="tree-view">
+            <!-- Tree view will be populated here -->
+          </div>
+        </div>
+
+        <div class="diff-view">
+          <!-- Horizontal timeline overlay -->
+          <div id="timeline-container" class="timeline-container">
+            <div id="timeline" class="timeline">
+              <!-- Timeline will be populated here -->
+            </div>
+          </div>
+
+          <div id="diff-content" class="diff-content">
+            <!-- Diff content will be displayed here -->
+            Select a file to view its diff
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./renderer.mjs"></script>
+  </body>
+</html>

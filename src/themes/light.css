@@ -1,0 +1,59 @@
+@import url('./highlight-light.css');
+
+:root {
+  /* Layout variables */
+  --sidebar-width: 250px;
+  --header-height: 40px;
+
+  /* Color palette */
+  --bg-primary: #f0f0f0;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f8f8f8;
+
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #888888;
+  --text-highlight: #000000; /* Black text for better contrast on highlights */
+
+  --border-color: #dddddd;
+  --tree-item-hover: #f0f0f0;
+  --tree-item-selected: #007acc;
+  --tree-item-changed: #ffff00; /* Bright yellow background for changed files */
+  --tree-item-changed-current: #ffff00; /* Bright yellow for current commit */
+  --tree-item-changed-prev-1: #cce6ff; /* Bright blue for 1 commit back */
+  --tree-item-changed-prev-2: #e6f2ff; /* Less blue for 2 commits back */
+  --tree-item-changed-prev-3: #f0f7ff; /* Even less blue for 3 commits back */
+  --tree-item-changed-next-1: #00ff00; /* Bright green for 1 commit forward */
+  --tree-item-changed-next-2: #66ff66; /* Less green for 2 commits forward */
+  --tree-item-changed-next-3: #b3ffb3; /* Even less green for 3 commits forward */
+
+  /* Directory stats colors */
+  --dir-stats-current: #00aa00;
+  --dir-stats-prev-1: #0066cc;
+  --dir-stats-prev-2: #003366;
+  --dir-stats-prev-3: #001a33;
+  --dir-stats-next-1: #00cc00;
+  --dir-stats-next-2: #006600;
+  --dir-stats-next-3: #003300;
+
+  --diff-added: #ddffdd;
+  --diff-removed: #ffdddd;
+
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+
+  /* Button colors */
+  --btn-danger-bg: #dc3545;
+  --btn-danger-hover: #c82333;
+  --btn-primary-bg: #007acc;
+  --btn-primary-hover: #005a9e;
+
+  /* Commit card colors */
+  --commit-card-bg: #ffffff;
+  --commit-card-border: #dddddd;
+  --commit-additions: #00aa00;
+  --commit-deletions: #aa0000;
+
+  /* Timeline container colors */
+  --timeline-bg: transparent;
+}

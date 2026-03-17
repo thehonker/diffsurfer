@@ -1,0 +1,41 @@
+{
+  "name": "@thehonker/diffsurfer",
+  "version": "1.3.5",
+  "description": "diffsurfer",
+  "keywords": [
+    "diffsurfer"
+  ],
+  "main": "dist/main.mjs",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "test": "npx eslint src/",
+    "build": "npm run test && npx tsc && npm run copy-assets",
+    "copy-assets": "mkdir -p dist/renderer/index && cp src/renderer/index/index.html dist/renderer/index/ && cp src/renderer/index/*.js dist/renderer/index/ 2>/dev/null || true && mkdir -p dist/themes && cp src/themes/*.css dist/themes/ && cp -r src/assets dist/ 2>/dev/null || true && mkdir -p dist/modules && cp src/modules/*.mts dist/modules/ && mkdir -p dist/services && cp src/services/*.mts dist/services/",
+    "dev": "npm run build && electron .",
+    "start": "electron .",
+    "server": "electron . --server"
+  },
+  "devDependencies": {
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^18.19.130",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "electron": "^41.0.2",
+    "eslint": "^9.39.4",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.1",
+    "simple-git": "^3.33.0",
+    "winston": "^3.19.0"
+  }
+}
