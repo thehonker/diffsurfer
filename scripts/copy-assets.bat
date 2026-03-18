@@ -23,15 +23,22 @@ for /f "tokens=1,2 delims=," %%a in (assets.csv) do (
         for %%f in ("!dest!") do (
             if not exist "%%~dpf" mkdir "%%~dpf"
         )
-        :: Use robocopy correctly for wildcard copies
+        :: Use copy command for wildcard copies
         for %%i in (!src!) do (
-            copy "%%i" "!dest!" >nul
+            copy "%%i" "!dest!" >nul 2>&1
         )
     ) else (
         :: This is a single file or directory copy
         for %%f in ("!dest!") do (
             if not exist "%%~dpf" mkdir "%%~dpf"
         )
-        xcopy "!src!" "!dest!" /E /I /Y /Q
+        :: Check if source is a directory
+        if exist "!src!\*" (
+            :: Source is a directory, use xcopy without /I flag
+            xcopy "!src!" "!dest!" /E /Y /Q >nul 2>&1
+        ) else (
+            :: Source is a file, use copy command
+            copy "!src!" "!dest!" >nul 2>&1
+        )
     )
 )
