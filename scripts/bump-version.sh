@@ -83,6 +83,7 @@ fi
 # Bump version in package.json
 print_status "Updating package.json..."
 npm version $NEW_VERSION --no-git-tag-version
+npm install --save
 
 # Update Formula/diffsurfer.rb
 print_status "Updating Formula/diffsurfer.rb..."
@@ -95,7 +96,7 @@ git diff package.json Formula/diffsurfer.rb
 
 # Commit changes
 print_status "Committing changes..."
-git add package.json Formula/diffsurfer.rb
+git add package.json package-lock.json Formula/diffsurfer.rb
 git commit -m "chore: bump version to $NEW_VERSION"
 
 # Create tag

@@ -3,7 +3,7 @@ class Diffsurfer < Formula
   homepage "https://github.com/thehonker/diffsurfer"
   url "https://github.com/thehonker/diffsurfer/releases/download/v#{version}/Diffsurfer-#{version}-arm64.dmg"
   sha256 "0c4365466eb68770bac0fadb84a1cb3fcc4cb44fc1df959948798764829919d2"
-  version "1.1.0"
+  version "1.1.1"
 
   depends_on macos: ">= :catalina"
 
