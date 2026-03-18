@@ -274,6 +274,8 @@ async function loadRepository(url: string) {
 
           if (statsResult.success && statsResult.stats) {
             commitStatsMap.set(commit.hash, statsResult.stats);
+            // Also add to the persistent cache
+            commitStatsCache.set(commit.hash, statsResult.stats);
           }
         } catch (error) {
           console.warn(`Failed to get stats for commit ${commit.hash}:`, error);
@@ -781,9 +783,12 @@ async function handleJumpToDiffClick() {
               // Update timeline display
               // Preserve existing commit stats to prevent losing stats when jumping
               const preservedCommitStatsMap = new Map(commitStatsCache);
-              const stats = getCommitStats(prevCommit.hash);
-              if (stats) {
-                preservedCommitStatsMap.set(prevCommit.hash, stats);
+              // Ensure we have stats for the new commit
+              if (!preservedCommitStatsMap.has(prevCommit.hash)) {
+                const stats = getCommitStats(prevCommit.hash);
+                if (stats) {
+                  preservedCommitStatsMap.set(prevCommit.hash, stats);
+                }
               }
               displayTimeline(
                 commits,
@@ -849,9 +854,12 @@ async function handleJumpToDiffClick() {
               // Update timeline display
               // Preserve existing commit stats to prevent losing stats when jumping
               const preservedCommitStatsMap = new Map(commitStatsCache);
-              const stats = getCommitStats(nextCommit.hash);
-              if (stats) {
-                preservedCommitStatsMap.set(nextCommit.hash, stats);
+              // Ensure we have stats for the new commit
+              if (!preservedCommitStatsMap.has(nextCommit.hash)) {
+                const stats = getCommitStats(nextCommit.hash);
+                if (stats) {
+                  preservedCommitStatsMap.set(nextCommit.hash, stats);
+                }
               }
               displayTimeline(
                 commits,
