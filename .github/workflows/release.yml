@@ -52,7 +52,7 @@ jobs:
         with:
           name: releases-${{ matrix.os }}
           path: release/*
-          
+
   publish:
     needs: release
     runs-on: ubuntu-latest
@@ -64,7 +64,39 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: releases
-          
+
+      - name: Calculate macOS DMG SHA256
+        id: calc_sha
+        run: |
+          cd releases/releases-macos-latest
+          DMG_FILE=$(ls *.dmg | head -n 1)
+          SHA256=$(shasum -a 256 "$DMG_FILE" | cut -d " " -f 1)
+          echo "dmg_file=$DMG_FILE" >> $GITHUB_OUTPUT
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "Calculated SHA256 for $DMG_FILE: $SHA256"
+
+      - name: Update Casks/diffsurfer.rb with new SHA256
+        run: |
+          # Extract version from tag (removing 'v' prefix)
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Updating Casks/diffsurfer.rb for version $VERSION"
+
+          # Update version and SHA256 in the cask file
+          sed -i "s/version \".*\"/version \"$VERSION\"/" Casks/diffsurfer.rb
+          sed -i "s/sha256 \".*\"/sha256 \"${{ steps.calc_sha.outputs.sha256 }}\"/" Casks/diffsurfer.rb
+
+          # Display the changes
+          echo "Updated Casks/diffsurfer.rb:"
+          cat Casks/diffsurfer.rb
+
+      - name: Commit updated Casks file
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add Casks/diffsurfer.rb
+          git commit -m "chore: update cask for version ${GITHUB_REF_NAME#v}"
+          git push
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

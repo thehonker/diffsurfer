@@ -68,6 +68,7 @@ To create a new release:
 2. Create a new git tag: `git tag v1.2.3`
 3. Push the tag: `git push origin v1.2.3`
 4. GitHub Actions will automatically build and create a release
+5. The release workflow will automatically update the SHA256 checksum in `Casks/diffsurfer.rb` and commit it back to the repository
 
 ## Code Style Guidelines
 
