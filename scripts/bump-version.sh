@@ -85,18 +85,18 @@ print_status "Updating package.json..."
 npm version $NEW_VERSION --no-git-tag-version
 npm install --save
 
-# Update Formula/diffsurfer.rb
-print_status "Updating Formula/diffsurfer.rb..."
+# Update Casks/diffsurfer.rb
+print_status "Updating Casks/diffsurfer.rb..."
 # Update version line
-sed -i '' "s/version \".*\"/version \"$NEW_VERSION\"/" Formula/diffsurfer.rb
+sed -i '' "s/version \".*\"/version \"$NEW_VERSION\"/" Casks/diffsurfer.rb
 
 # Show changes
 print_status "Changes made:"
-git diff package.json Formula/diffsurfer.rb
+git diff package.json Casks/diffsurfer.rb
 
 # Commit changes
 print_status "Committing changes..."
-git add package.json package-lock.json Formula/diffsurfer.rb
+git add package.json package-lock.json Casks/diffsurfer.rb
 git commit -m "chore: bump version to $NEW_VERSION"
 
 # Create tag
