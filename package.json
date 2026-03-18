@@ -14,7 +14,7 @@
   "scripts": {
     "test": "npx eslint src/",
     "build": "npm run test && npx tsc && npm run copy-assets",
-    "copy-assets": "mkdir -p dist/renderer/index && cp src/renderer/index/index.html dist/renderer/index/ && cp src/renderer/index/*.js dist/renderer/index/ 2>/dev/null || true && mkdir -p dist/themes && cp src/themes/*.css dist/themes/ && cp -r src/assets dist/ 2>/dev/null || true && mkdir -p dist/modules && cp src/modules/*.mts dist/modules/ && mkdir -p dist/services && cp src/services/*.mts dist/services/",
+    "copy-assets": "node -e \"const os=require('os'); const {execSync}=require('child_process'); execSync(os.platform()==='win32'?'scripts/copy-assets.bat':'scripts/copy-assets.sh',{stdio:'inherit'})\"",
     "dev": "npm run build && electron .",
     "start": "electron .",
     "server": "electron . --server",

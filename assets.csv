@@ -1,0 +1,6 @@
+src/renderer/index/index.html,dist/renderer/index/index.html
+src/renderer/index/*.js,dist/renderer/index/
+src/themes/*.css,dist/themes/
+src/assets,dist/assets
+src/modules/*.mts,dist/modules/
+src/services/*.mts,dist/services/
