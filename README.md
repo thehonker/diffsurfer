@@ -1,5 +1,7 @@
 # diffsurfer
 
+![diffsurfer screenshot](diffsurfer.png)
+
 A GUI commit history timeline viewer for Git repositories.
 
 ## Features
@@ -58,13 +60,13 @@ brew install --cask diffsurfer
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/thehonker/diffsurfer.git
    ```
 
 2. Install dependencies:
 
    ```bash
-   npm install
+   npm install --include=dev
    ```
 
 3. Build the application:
@@ -77,13 +79,13 @@ brew install --cask diffsurfer
 
 ### Running the Application
 
-Start the application in development mode:
+Build and run the application:
 
 ```bash
 npm run dev
 ```
 
-Or run the built application:
+Or just run the built application:
 
 ```bash
 npm run start
@@ -120,7 +122,26 @@ This will:
 2. Compile TypeScript files
 3. Copy static assets to the dist directory
 
-### Packaging
+
+### Running Tests
+
+Run linting checks:
+
+```bash
+npm test
+```
+
+### Server Mode
+
+Run the application in server mode to serve the UI over HTTP:
+
+```bash
+npm run server
+```
+
+The server will be available at http://localhost:3000
+
+## Packaging
 
 Create distributable packages for all platforms:
 
@@ -140,26 +161,6 @@ npm run dist:win
 # Linux
 npm run dist:linux
 ```
-
-### Running Tests
-
-Run theing checks:
-
-```bash
-npm test
-```
-
-### Server Mode
-
-Run the application in server mode to serve the UI over HTTP:
-
-```bash
-npm run server
-```
-
-The server will be available at http://localhost:3000
-
-## Packaging
 
 This project uses GitHub Actions for automated building and packaging:
 
