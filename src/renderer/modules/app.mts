@@ -858,16 +858,17 @@ async function handleJumpToDiffClick() {
               setSelectedCommitHash(prevCommit.hash);
 
               // Update timeline display
-              // Create a minimal commit stats map with just the stats for this commit
-              const minimalCommitStatsMap = new Map<
-                string,
-                { additions: number; deletions: number }
-              >();
+              // Preserve existing commit stats to prevent losing stats when jumping
+              const preservedCommitStatsMap = new Map(commitStatsCache);
               const stats = getCommitStats(prevCommit.hash);
               if (stats) {
-                minimalCommitStatsMap.set(prevCommit.hash, stats);
+                preservedCommitStatsMap.set(prevCommit.hash, stats);
               }
-              displayTimeline(commits, prevCommit.hash, minimalCommitStatsMap);
+              displayTimeline(
+                commits,
+                prevCommit.hash,
+                preservedCommitStatsMap
+              );
 
               // Refresh file display for the new commit
               await refreshFileDisplay(
@@ -925,16 +926,17 @@ async function handleJumpToDiffClick() {
               setSelectedCommitHash(nextCommit.hash);
 
               // Update timeline display
-              // Create a minimal commit stats map with just the stats for this commit
-              const minimalCommitStatsMap = new Map<
-                string,
-                { additions: number; deletions: number }
-              >();
+              // Preserve existing commit stats to prevent losing stats when jumping
+              const preservedCommitStatsMap = new Map(commitStatsCache);
               const stats = getCommitStats(nextCommit.hash);
               if (stats) {
-                minimalCommitStatsMap.set(nextCommit.hash, stats);
+                preservedCommitStatsMap.set(nextCommit.hash, stats);
               }
-              displayTimeline(commits, nextCommit.hash, minimalCommitStatsMap);
+              displayTimeline(
+                commits,
+                nextCommit.hash,
+                preservedCommitStatsMap
+              );
 
               // Refresh file display for the new commit
               await refreshFileDisplay(

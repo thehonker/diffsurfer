@@ -5,6 +5,7 @@
   "keywords": [
     "diffsurfer"
   ],
+  "author": "Edwin Pers <pers.edwin@gmail.com>",
   "main": "dist/main.mjs",
   "type": "module",
   "engines": {
@@ -16,16 +17,67 @@
     "copy-assets": "mkdir -p dist/renderer/index && cp src/renderer/index/index.html dist/renderer/index/ && cp src/renderer/index/*.js dist/renderer/index/ 2>/dev/null || true && mkdir -p dist/themes && cp src/themes/*.css dist/themes/ && cp -r src/assets dist/ 2>/dev/null || true && mkdir -p dist/modules && cp src/modules/*.mts dist/modules/ && mkdir -p dist/services && cp src/services/*.mts dist/services/",
     "dev": "npm run build && electron .",
     "start": "electron .",
-    "server": "electron . --server"
+    "server": "electron . --server",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.thehonker.diffsurfer",
+    "productName": "Diffsurfer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "!node_modules/@types/**/*",
+      "!node_modules/electron/**/*",
+      "!node_modules/electron-builder/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "src/assets/icon.icns"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "src/assets/icon.ico"
+    },
+    "linux": {
+      "category": "Development",
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ],
+      "icon": "src/assets/icon.png"
+    },
+    "appImage": {
+      "artifactName": "${productName}-${version}-${arch}.AppImage"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "devDependencies": {
     "@types/electron-squirrel-startup": "^1.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^18.19.130",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.57.0",
-    "@typescript-eslint/parser": "^8.57.0",
-    "electron": "^41.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
+    "electron": "^41.0.3",
+    "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",
     "globals": "^17.4.0",
     "prettier": "^3.8.1",

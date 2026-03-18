@@ -24,6 +24,21 @@ npm run start
 npm run copy-assets
 ```
 
+### Packaging Commands
+
+```bash
+# Create distributable packages for all platforms
+npm run dist
+
+# Create packages for specific platforms
+npm run dist:mac
+npm run dist:win
+npm run dist:linux
+
+# Create unpacked directory for testing
+npm run pack
+```
+
 ### Lint Commands
 
 ```bash
@@ -39,6 +54,20 @@ Note: The "test" script actually runs linting, not tests. There are currently no
 # Compile TypeScript (handled by build command)
 npx tsc
 ```
+
+### GitHub Actions
+
+This project uses GitHub Actions for continuous integration and automated releases:
+
+- `.github/workflows/build.yml` - Runs on every push/PR to main branch, builds and packages for all platforms
+- `.github/workflows/release.yml` - Runs when a new git tag is pushed, creates a GitHub release with all platform packages
+
+To create a new release:
+
+1. Update the version in package.json
+2. Create a new git tag: `git tag v1.2.3`
+3. Push the tag: `git push origin v1.2.3`
+4. GitHub Actions will automatically build and create a release
 
 ## Code Style Guidelines
 
