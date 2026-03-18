@@ -14,7 +14,7 @@
   "scripts": {
     "test": "npx eslint src/",
     "build": "npm run test && npx tsc && npm run copy-assets",
-    "copy-assets": "node -e \"const os=require('os'); const {execSync}=require('child_process'); execSync(os.platform()==='win32'?'scripts/copy-assets.bat':'scripts/copy-assets.sh',{stdio:'inherit'})\"",
+    "copy-assets": "node -e \"const os=require('os'); const {execSync}=require('child_process'); const path=require('path'); const scriptPath=path.join('./scripts', os.platform()==='win32'?'copy-assets.bat':'copy-assets.sh'); execSync(scriptPath,{stdio:'inherit'})\"",
     "dev": "npm run build && electron .",
     "start": "electron .",
     "server": "electron . --server",
