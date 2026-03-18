@@ -229,15 +229,63 @@ function attachFileTreeEventListeners(treeView: HTMLElement, repoPath: string) {
   treeView.addEventListener('click', currentFileTreeListener);
 }
 
-async function loadRepository(url: string) {
+// Loading state management
+let isLoading = false;
+
+function setLoadingState(loading: boolean) {
+  isLoading = loading;
+
   const loadingSpinner = document.getElementById('loading-spinner');
   const loadingText = document.getElementById('loading-text');
   const loadedText = document.getElementById('loaded-text');
+  const projectLoaderIndicator = document.getElementById('loading-indicator');
+  const projectLoaderSpinner =
+    projectLoaderIndicator?.querySelector('.loading-spinner');
+  const loadRepoBtn = document.getElementById(
+    'load-repo-btn'
+  ) as HTMLButtonElement | null;
+  const repoUrlInput = document.getElementById(
+    'repo-url'
+  ) as HTMLInputElement | null;
 
-  // Show loading indicator and hide loaded indicator
-  if (loadingSpinner) loadingSpinner.style.display = 'block';
-  if (loadingText) loadingText.style.display = 'block';
-  if (loadedText) loadedText.style.display = 'none';
+  if (loading) {
+    // Show loading indicators and hide loaded indicator
+    if (loadingSpinner) loadingSpinner.style.display = 'block';
+    if (loadingText) loadingText.style.display = 'block';
+    if (loadedText) loadedText.style.display = 'none';
+    if (projectLoaderIndicator) projectLoaderIndicator.style.display = 'flex';
+    if (projectLoaderSpinner)
+      (projectLoaderSpinner as HTMLElement).style.display = 'inline-block';
+
+    // Hide load button during loading
+    if (loadRepoBtn) loadRepoBtn.style.display = 'none';
+
+    // Disable UI elements during loading
+    if (repoUrlInput) repoUrlInput.disabled = true;
+  } else {
+    // Hide loading indicators and show loaded indicator
+    if (loadingSpinner) loadingSpinner.style.display = 'none';
+    if (loadingText) loadingText.style.display = 'none';
+    if (loadedText) loadedText.style.display = 'block';
+    if (projectLoaderIndicator) projectLoaderIndicator.style.display = 'none';
+    if (projectLoaderSpinner)
+      (projectLoaderSpinner as HTMLElement).style.display = 'none';
+
+    // Show load button when not loading
+    if (loadRepoBtn) loadRepoBtn.style.display = 'block';
+
+    // Re-enable UI elements
+    if (repoUrlInput) repoUrlInput.disabled = false;
+  }
+}
+
+async function loadRepository(url: string) {
+  // Prevent multiple simultaneous loads
+  if (isLoading) {
+    return;
+  }
+
+  setLoadingState(true);
 
   try {
     // Load the repository
@@ -499,10 +547,8 @@ async function loadRepository(url: string) {
 
     return currentRepoPath;
   } finally {
-    // Hide loading indicator and show loaded indicator
-    if (loadingSpinner) loadingSpinner.style.display = 'none';
-    if (loadingText) loadingText.style.display = 'none';
-    if (loadedText) loadedText.style.display = 'block';
+    // Set loading state to false when done
+    setLoadingState(false);
   }
 }
 
@@ -910,6 +956,12 @@ async function initializeApp() {
 
   // Initialize timeline blur effect
   initializeTimelineBlur();
+
+  // Initialize loading indicator to hidden
+  const projectLoaderIndicator = document.getElementById('loading-indicator');
+  if (projectLoaderIndicator) {
+    projectLoaderIndicator.style.display = 'none';
+  }
 
   // Set up event listeners for UI elements
   const loadRepoBtn = document.getElementById('load-repo-btn');

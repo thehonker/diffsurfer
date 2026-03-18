@@ -85,6 +85,12 @@
         display: none;
       }
 
+      .loading-indicator .loading-spinner {
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
       @keyframes spin {
         0% {
           transform: rotate(0deg);
@@ -116,6 +122,10 @@
         display: flex;
         align-items: center;
         margin-right: auto;
+      }
+
+      .loading-container .loading-text {
+        margin-right: 8px;
       }
 
       /* Platform-specific adjustments */
@@ -681,11 +691,44 @@
         font-size: 1rem;
       }
 
+      .loading-indicator {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        background-color: var(--btn-primary-bg);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        width: 100%;
+        font-size: 1rem;
+        cursor: not-allowed;
+      }
+
+      .loading-indicator span {
+        margin-right: 10px;
+      }
+
+      .loading-indicator .loading-spinner {
+        display: inline-block;
+        vertical-align: middle;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        width: 16px;
+        height: 16px;
+      }
+
       /* Loading and error indicators */
       .loading-indicator,
       .error-message {
         text-align: center;
         padding: 20px;
+      }
+
+      .loading-indicator {
+        display: none;
+        align-items: center;
+        justify-content: center;
       }
 
       .error-message {
@@ -703,7 +746,7 @@
       <div class="header">
         <div id="repo-info" class="repo-info hidden">
           <div class="loading-container">
-            <span class="loading-text" id="loading-text">Loading...</span>
+            <span class="loading-text" id="loading-text">Loading</span>
             <div class="loading-spinner" id="loading-spinner"></div>
             <span class="loaded-text" id="loaded-text" style="display: none"
               >Ready.</span
@@ -734,9 +777,8 @@
 
       <div id="project-loader-container" class="project-loader-container">
         <div class="project-loader">
-          <h2>Load Repository</h2>
           <div>
-            <label for="repo-url">Repository URL (file:// or git://):</label>
+            <label for="repo-url">Open Repository:</label>
             <input
               type="text"
               id="repo-url"
@@ -744,9 +786,10 @@
             />
           </div>
           <button id="load-repo-btn">Load Repository</button>
-          <div id="loading-indicator" class="loading-indicator">
-            <span>Loading...</span>
-          </div>
+          <button id="loading-indicator" class="loading-indicator" disabled>
+            <span>Loading</span>
+            <div class="loading-spinner"></div>
+          </button>
           <div id="error-message" class="error-message"></div>
         </div>
       </div>
