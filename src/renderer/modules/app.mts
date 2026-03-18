@@ -41,8 +41,8 @@ import {
   setupTimelineNavigation,
   initializeTimelineBlur,
   cancelPendingNavigation,
-  getVisibleCommits,
   updateCommitStats,
+  updateVisualSelection,
 } from './timeline.mjs';
 
 // Application state
@@ -313,61 +313,8 @@ async function loadRepository(url: string) {
         // Get the updated commits
         const commits = getCommits();
 
-        // Get visible commits from current timeline before updating selection
-        // Preserve existing stats to prevent flashing during transition
-        const visibleCommitHashes = getVisibleCommits();
-
-        // Use existing commit stats to maintain visual continuity
-        // This prevents the flashing issue when quickly scrolling through timeline
-        const existingStatsMap = new Map(commitStatsCache);
-        displayTimeline(commits, hash, existingStatsMap);
-
-        // If no visible commits, fall back to loading stats for selected commit only
-        const commitsToLoadStats =
-          visibleCommitHashes.length > 0 ? [...visibleCommitHashes] : [hash];
-        if (
-          visibleCommitHashes.length > 0 &&
-          !commitsToLoadStats.includes(hash)
-        ) {
-          commitsToLoadStats.push(hash);
-        }
-
-        // Preserve all existing cached stats to prevent flashing
-        // Start with a copy of all cached stats
-        const updatedCommitStatsMap = new Map(commitStatsCache);
-
-        // Load stats for visible commits plus selected commit, using cache where possible
-        for (const commitHash of commitsToLoadStats) {
-          // Check if we already have stats in cache
-          if (commitStatsCache.has(commitHash)) {
-            updatedCommitStatsMap.set(
-              commitHash,
-              commitStatsCache.get(commitHash)!
-            );
-          } else {
-            // Load stats from API if not in cache
-            try {
-              const statsResult = await window.electronAPI.getCommitStats(
-                currentRepoPath!,
-                commitHash
-              );
-
-              if (statsResult.success && statsResult.stats) {
-                updatedCommitStatsMap.set(commitHash, statsResult.stats);
-                // Cache the stats for future use
-                commitStatsCache.set(commitHash, statsResult.stats);
-              }
-            } catch (error) {
-              console.warn(
-                `Failed to get stats for commit ${commitHash}:`,
-                error
-              );
-            }
-          }
-        }
-
-        // Refresh timeline to show selected commit with updated stats
-        displayTimeline(commits, hash, updatedCommitStatsMap);
+        // Update visual selection immediately without rebuilding the entire timeline
+        updateVisualSelection(hash);
 
         // Update commit selector to match selected commit
         const commitSelect = document.getElementById(
@@ -380,6 +327,25 @@ async function loadRepository(url: string) {
         // Load file changes for selected commit
         if (currentRepoPath) {
           await refreshFileDisplay(currentRepoPath, commits, hash);
+        }
+
+        // Load commit stats for the selected commit if not already cached
+        if (!commitStatsCache.has(hash)) {
+          try {
+            const statsResult = await window.electronAPI.getCommitStats(
+              currentRepoPath!,
+              hash
+            );
+
+            if (statsResult.success && statsResult.stats) {
+              // Cache the stats for future use
+              commitStatsCache.set(hash, statsResult.stats);
+              // Update only the specific commit stats without rebuilding the entire timeline
+              updateCommitStats(hash, statsResult.stats);
+            }
+          } catch (error) {
+            console.warn(`Failed to get stats for commit ${hash}:`, error);
+          }
         }
       });
 
@@ -632,10 +598,8 @@ async function handleCommitSelectChange(
   // Get the updated commits
   const commits = getCommits();
 
-  // First, update the timeline visually with the selected commit and scroll to it
-  // Preserve existing stats to prevent flashing during transition
-  const existingStatsMap = new Map(commitStatsCache);
-  displayTimeline(commits, selectedHash, existingStatsMap);
+  // Update visual selection immediately without rebuilding the entire timeline
+  updateVisualSelection(selectedHash);
 
   // Scroll to the selected commit to ensure proper positioning
   const timelineContainer = document.getElementById('timeline-container');
@@ -662,49 +626,24 @@ async function handleCommitSelectChange(
     }
   }
 
-  // Now get visible commits from timeline after scrolling to selected commit
-  const visibleCommitHashes = getVisibleCommits();
+  // Load commit stats for the selected commit if not already cached
+  if (!commitStatsCache.has(selectedHash)) {
+    try {
+      const statsResult = await window.electronAPI.getCommitStats(
+        currentRepoPath,
+        selectedHash
+      );
 
-  // If no visible commits, fall back to loading stats for selected commit only
-  const commitsToLoadStats =
-    visibleCommitHashes.length > 0 ? [...visibleCommitHashes] : [selectedHash];
-  if (
-    visibleCommitHashes.length > 0 &&
-    !commitsToLoadStats.includes(selectedHash)
-  ) {
-    commitsToLoadStats.push(selectedHash);
-  }
-
-  // Preserve all existing cached stats to prevent flashing
-  // Start with a copy of all cached stats
-  const commitStatsMap = new Map(commitStatsCache);
-
-  // Load stats for visible commits plus selected commit, using cache where possible
-  for (const hash of commitsToLoadStats) {
-    // Check if we already have stats in cache
-    if (commitStatsCache.has(hash)) {
-      commitStatsMap.set(hash, commitStatsCache.get(hash)!);
-    } else {
-      // Load stats from API if not in cache
-      try {
-        const statsResult = await window.electronAPI.getCommitStats(
-          currentRepoPath,
-          hash
-        );
-
-        if (statsResult.success && statsResult.stats) {
-          commitStatsMap.set(hash, statsResult.stats);
-          // Cache the stats for future use
-          commitStatsCache.set(hash, statsResult.stats);
-        }
-      } catch (error) {
-        console.warn(`Failed to get stats for commit ${hash}:`, error);
+      if (statsResult.success && statsResult.stats) {
+        // Cache the stats for future use
+        commitStatsCache.set(selectedHash, statsResult.stats);
+        // Update only the specific commit stats without rebuilding the entire timeline
+        updateCommitStats(selectedHash, statsResult.stats);
       }
+    } catch (error) {
+      console.warn(`Failed to get stats for commit ${selectedHash}:`, error);
     }
   }
-
-  // Refresh timeline to show selected commit with updated stats
-  displayTimeline(commits, selectedHash, commitStatsMap);
 
   // Update commit selector to match selected commit (in case of programmatic changes)
   commitSelect.value = selectedHash;

@@ -29,8 +29,5 @@ export function createWindow(): BrowserWindow {
   // and load the index.html of the app.
   void mainWindow.loadFile(join(__dirname, '../renderer/index/index.html'));
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
   return mainWindow;
 }
