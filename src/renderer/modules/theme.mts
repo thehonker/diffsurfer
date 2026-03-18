@@ -82,21 +82,50 @@ async function updateThemeLink(themeName: string) {
   const themeLink = document.getElementById('theme-link') as HTMLLinkElement;
   // Check if it's a built-in theme or user theme
   if (themeName === 'light' || themeName === 'dark') {
-    // Get the correct path to the themes directory
+    // Try to get CSS content directly through IPC
     try {
-      const result = await window.electronAPI.getThemesPath();
-      if (result.success && result.themesPath) {
-        // In a packaged app, we need to use file:// URLs for CSS files
-        const cssPath = `file://${result.themesPath}/${themeName}.css`;
-        themeLink.href = cssPath;
+      const result = await window.electronAPI.getCssContent(themeName);
+      if (result.success && result.cssContent) {
+        // Create a blob URL for the CSS content
+        const blob = new Blob([result.cssContent], { type: 'text/css' });
+        const blobUrl = URL.createObjectURL(blob);
+        themeLink.href = blobUrl;
       } else {
-        // Fallback to relative path if IPC call fails
-        themeLink.href = `../../themes/${themeName}.css`;
+        // Fallback to file path approach
+        console.warn('Failed to get CSS content, falling back to file path');
+        const pathResult = await window.electronAPI.getThemesPath();
+        if (pathResult.success && pathResult.themesPath) {
+          // In a packaged app, we need to use file:// URLs for CSS files
+          const cssPath = `file://${pathResult.themesPath}/${themeName}.css`;
+          themeLink.href = cssPath;
+        } else {
+          // Fallback to relative path if IPC call fails
+          console.warn('Failed to get themes path');
+          themeLink.href = `../../themes/${themeName}.css`;
+        }
       }
     } catch (error) {
-      // Fallback to relative path if IPC call fails
-      console.warn('Failed to get themes path, using fallback:', error);
-      themeLink.href = `../../themes/${themeName}.css`;
+      // Fallback to file path approach if IPC call fails
+      console.warn(
+        'Failed to get CSS content via IPC, falling back to file path:',
+        error
+      );
+      try {
+        const pathResult = await window.electronAPI.getThemesPath();
+        if (pathResult.success && pathResult.themesPath) {
+          // In a packaged app, we need to use file:// URLs for CSS files
+          const cssPath = `file://${pathResult.themesPath}/${themeName}.css`;
+          themeLink.href = cssPath;
+        } else {
+          // Fallback to relative path if IPC call fails
+          console.warn('Failed to get themes path');
+          themeLink.href = `../../themes/${themeName}.css`;
+        }
+      } catch (pathError) {
+        // Final fallback to relative path
+        console.warn('Failed to get themes path, using fallback:', pathError);
+        themeLink.href = `../../themes/${themeName}.css`;
+      }
     }
   } else {
     console.log('user themes not yet supported!');

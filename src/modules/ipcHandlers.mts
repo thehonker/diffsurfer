@@ -241,6 +241,31 @@ export function registerThemeIpcHandlers(): void {
       };
     }
   });
+
+  ipcMain.handle('theme:get-css-content', async (_event, themeName: string) => {
+    try {
+      const { app } = await import('electron');
+      const { join } = await import('node:path');
+      const { readFile } = await import('node:fs/promises');
+
+      // Construct the path to the CSS file
+      const cssPath = join(
+        app.getAppPath(),
+        'dist',
+        'themes',
+        `${themeName}.css`
+      );
+
+      // Read the CSS file content
+      const cssContent = await readFile(cssPath, 'utf8');
+      return { success: true, cssContent };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+  });
 }
 
 /**
