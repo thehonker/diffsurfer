@@ -35,11 +35,11 @@ if (isServerMode) {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  void app.whenReady().then(() => {
+  void app.whenReady().then(async () => {
     // Clean up old repositories on startup
     cleanupOldRepositories();
 
-    const mainWindow = createWindow();
+    const mainWindow = await createWindow();
 
     // Register IPC handler for window theme updates
     registerWindowThemeIpcHandler(mainWindow);
@@ -48,7 +48,7 @@ if (isServerMode) {
       // On OS X it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
+        void createWindow();
       }
     });
   });
