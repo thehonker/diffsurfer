@@ -95,7 +95,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git add Casks/diffsurfer.rb
           git commit -m "chore: update cask for version ${GITHUB_REF_NAME#v}"
-          git push
+          git push origin HEAD:main
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
