@@ -1,6 +1,6 @@
 cask "diffsurfer" do
   version "1.1.7"
-  sha256 "8ae5b75e2df14c305d3f023c53d0dc36302b15b7e07dffd30f9ba3fd01264f71"
+  sha256 "68941647b040477cf9b57eec635f1d1612d56e5f1c5ff3d8d542642d71811e5b"
 
   url "https://github.com/thehonker/diffsurfer/releases/download/v#{version}/Diffsurfer-#{version}-arm64.dmg"
   name "Diffsurfer"
