@@ -43,6 +43,7 @@ import {
   cancelPendingNavigation,
   updateCommitStats,
   updateVisualSelection,
+  scrollToSelectedCommit,
 } from './timeline.mjs';
 
 // Application state
@@ -347,6 +348,9 @@ async function loadRepository(url: string) {
             console.warn(`Failed to get stats for commit ${hash}:`, error);
           }
         }
+
+        // Scroll to keep the selected commit in view
+        scrollToSelectedCommit(hash);
       });
 
       // Set up timeline navigation (scroll and arrow keys)
@@ -601,30 +605,8 @@ async function handleCommitSelectChange(
   // Update visual selection immediately without rebuilding the entire timeline
   updateVisualSelection(selectedHash);
 
-  // Scroll to the selected commit to ensure proper positioning
-  const timelineContainer = document.getElementById('timeline-container');
-  const timeline = document.getElementById('timeline');
-  if (timelineContainer && timeline) {
-    const selectedNode = timeline.querySelector(
-      `.commit-node[data-hash="${selectedHash}"]`
-    ) as HTMLElement;
-    if (selectedNode) {
-      // Calculate the position to center the selected node
-      const containerWidth = timelineContainer.offsetWidth;
-      const nodeOffsetLeft = selectedNode.offsetLeft;
-      const nodeWidth = selectedNode.offsetWidth;
-
-      // Calculate scroll position to center the node
-      const scrollPosition =
-        nodeOffsetLeft - containerWidth / 2 + nodeWidth / 2;
-
-      // Scroll to the calculated position
-      timelineContainer.scrollTo({
-        left: scrollPosition,
-        behavior: 'instant', // Use instant scroll to avoid animation delays
-      });
-    }
-  }
+  // Scroll to keep the selected commit in view
+  scrollToSelectedCommit(selectedHash);
 
   // Load commit stats for the selected commit if not already cached
   if (!commitStatsCache.has(selectedHash)) {
@@ -1012,4 +994,5 @@ export {
   getCommitStats,
   showError,
   loadAllCommitStats,
+  scrollToSelectedCommit,
 };

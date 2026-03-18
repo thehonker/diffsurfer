@@ -420,6 +420,35 @@ function updateVisualSelection(hash: string): void {
       timelineContainer.classList.remove('has-selection');
     }
   }
+
+  // Scroll to center the selected commit
+  scrollToSelectedCommit(hash);
+}
+
+function scrollToSelectedCommit(hash: string): void {
+  const timelineContainer = document.getElementById('timeline-container');
+  const timeline = document.getElementById('timeline');
+  if (timelineContainer && timeline) {
+    const selectedNode = timeline.querySelector(
+      `.commit-node[data-hash="${hash}"]`
+    ) as HTMLElement;
+    if (selectedNode) {
+      // Calculate the position to center the selected node
+      const containerWidth = timelineContainer.offsetWidth;
+      const nodeOffsetLeft = selectedNode.offsetLeft;
+      const nodeWidth = selectedNode.offsetWidth;
+
+      // Calculate scroll position to center the node
+      const scrollPosition =
+        nodeOffsetLeft - containerWidth / 2 + nodeWidth / 2;
+
+      // Scroll to the calculated position
+      timelineContainer.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth',
+      });
+    }
+  }
 }
 
 function updateCommitStats(
@@ -520,4 +549,5 @@ export {
   updateVisualSelection,
   getVisibleCommits,
   updateCommitStats,
+  scrollToSelectedCommit,
 };
