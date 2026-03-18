@@ -22,7 +22,8 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
-    "dist:linux": "electron-builder --linux"
+    "dist:linux": "electron-builder --linux",
+    "bump": "./scripts/bump-version.sh"
   },
   "build": {
     "appId": "com.thehonker.diffsurfer",

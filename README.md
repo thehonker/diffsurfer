@@ -20,8 +20,7 @@ A GUI commit history timeline viewer for Git repositories.
 Install via Homebrew using this repository as a tap:
 
 ```bash
-brew tap thehonker/diffsurfer
-brew install --cask diffsurfer
+brew tap thehonker/diffsurfer https://github.com/thehonker/diffsurfer.git
 ```
 
 Then install Diffsurfer:
