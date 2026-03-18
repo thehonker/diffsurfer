@@ -1,3 +1,6 @@
 src/renderer/index/index.html,dist/renderer/index/index.html
-src/themes/*.css,dist/themes/
+src/themes/light.css,dist/themes/light.css
+src/themes/dark.css,dist/themes/dark.css
+src/themes/highlight-light.css,dist/themes/highlight-light.css
+src/themes/highlight-dark.css,dist/themes/highlight-dark.css
 src/assets,dist/assets
