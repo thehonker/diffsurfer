@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('git:checkout-branch', repoPath, branchName),
   getUserThemesDir: () => ipcRenderer.invoke('theme:get-user-themes-dir'),
   listUserThemes: () => ipcRenderer.invoke('theme:list-user-themes'),
+  getThemesPath: () => ipcRenderer.invoke('theme:get-themes-path'),
+  getCssContent: (themeName: string) =>
+    ipcRenderer.invoke('theme:get-css-content', themeName),
   openUrl: (url: string) => ipcRenderer.invoke('open:url', url),
   openDirectory: (path: string) => ipcRenderer.invoke('open:directory', path),
   setTitlebarTheme: (theme: 'light' | 'dark') =>
