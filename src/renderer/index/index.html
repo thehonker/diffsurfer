@@ -106,12 +106,6 @@
         display: none;
       }
 
-      .header h1 {
-        margin: 0;
-        color: var(--text-primary);
-        font-size: 1.2rem;
-      }
-
       .repo-info {
         display: flex;
         align-items: center;
@@ -219,10 +213,6 @@
         white-space: nowrap;
       }
 
-      .clear-repo-btn:hover {
-        background-color: var(--btn-danger-hover);
-      }
-
       .jump-to-diff-btn {
         padding: 4px 8px;
         background-color: var(--btn-primary-bg);
@@ -233,10 +223,6 @@
         font-size: 0.8rem;
         white-space: nowrap;
         margin-right: 10px;
-      }
-
-      .jump-to-diff-btn:hover {
-        background-color: var(--btn-primary-hover);
       }
 
       .main-content {
@@ -321,14 +307,6 @@
         color: #666666;
       }
 
-      .file-stats.current::before {
-        content: '(';
-      }
-
-      .file-stats.current::after {
-        content: ')';
-      }
-
       .file-stats.current .additions {
         color: green;
       }
@@ -339,14 +317,6 @@
 
       .file-stats.nearby {
         color: blue;
-      }
-
-      .file-stats.nearby::before {
-        content: '(';
-      }
-
-      .file-stats.nearby::after {
-        content: ')';
       }
 
       .file-stats.future {
@@ -460,29 +430,6 @@
         position: relative;
       }
 
-      .commit-selector {
-        height: var(--header-height);
-        padding: 0 15px;
-        border-bottom: 1px solid var(--border-color);
-        background-color: var(--bg-tertiary);
-        display: flex;
-        align-items: center;
-        color: var(--text-primary);
-      }
-
-      .commit-selector label {
-        margin-right: 10px;
-      }
-
-      .commit-selector select {
-        flex: 1;
-        padding: 5px;
-        border: 1px solid var(--border-color);
-        border-radius: 3px;
-        background-color: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-
       /* Horizontal timeline styles */
       .timeline-container {
         margin: 0;
@@ -565,10 +512,6 @@
         isolation: isolate;
       }
 
-      .commit-card:hover {
-        box-shadow: 0 4px 12px var(--shadow-hover);
-      }
-
       .commit-card.collapsed {
         background: var(--commit-card-bg);
         border: 1px solid var(--commit-card-border);
@@ -589,10 +532,6 @@
         z-index: 2;
         /* Prevent backdrop filter from affecting card content */
         isolation: isolate;
-      }
-
-      .commit-card.collapsed:hover {
-        box-shadow: 0 4px 12px var(--shadow-hover);
       }
 
       .commit-card.collapsed .additions,
@@ -742,10 +681,6 @@
         font-size: 1rem;
       }
 
-      .project-loader button:hover {
-        background-color: var(--btn-primary-hover);
-      }
-
       /* Loading and error indicators */
       .loading-indicator,
       .error-message {
@@ -755,10 +690,6 @@
 
       .error-message {
         color: red;
-        display: none;
-      }
-
-      .loading-indicator {
         display: none;
       }
 
