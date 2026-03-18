@@ -8,8 +8,4 @@ cask "diffsurfer" do
   homepage "https://github.com/thehonker/diffsurfer"
 
   app "Diffsurfer.app"
-
-  caveats do
-    requires_rosetta
-  end
 end

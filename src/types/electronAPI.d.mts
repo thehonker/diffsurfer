@@ -109,6 +109,12 @@ export interface SetTitlebarThemeResult {
   error?: string;
 }
 
+export interface GetThemesPathResult {
+  success: boolean;
+  themesPath?: string;
+  error?: string;
+}
+
 export interface ElectronAPI {
   sendMessage: (message: string) => void;
   loadRepository: (url: string) => Promise<LoadRepositoryResult>;
@@ -152,6 +158,7 @@ export interface ElectronAPI {
   setTitlebarTheme: (
     theme: 'light' | 'dark'
   ) => Promise<SetTitlebarThemeResult>;
+  getThemesPath: () => Promise<GetThemesPathResult>;
 }
 
 declare global {

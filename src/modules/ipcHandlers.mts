@@ -226,6 +226,21 @@ export function registerThemeIpcHandlers(): void {
       };
     }
   });
+
+  ipcMain.handle('theme:get-themes-path', async () => {
+    try {
+      // Get the path to the themes directory relative to the app resources
+      const { app } = await import('electron');
+      const { join } = await import('node:path');
+      const themesPath = join(app.getAppPath(), 'dist', 'themes');
+      return { success: true, themesPath };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+  });
 }
 
 /**
