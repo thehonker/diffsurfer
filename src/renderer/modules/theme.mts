@@ -80,6 +80,13 @@ async function initializeTheme() {
 
 async function updateThemeLink(themeName: string) {
   const themeLink = document.getElementById('theme-link') as HTMLLinkElement;
+
+  // Remove any existing highlight.js theme link
+  const existingHighlightLink = document.getElementById('highlight-theme-link');
+  if (existingHighlightLink) {
+    existingHighlightLink.remove();
+  }
+
   // Check if it's a built-in theme or user theme
   if (themeName === 'light' || themeName === 'dark') {
     // Try to get CSS content directly through IPC
@@ -127,6 +134,22 @@ async function updateThemeLink(themeName: string) {
         themeLink.href = `../../themes/${themeName}.css`;
       }
     }
+
+    // Add highlight.js theme link
+    const highlightLink = document.createElement('link');
+    highlightLink.id = 'highlight-theme-link';
+    highlightLink.rel = 'stylesheet';
+    highlightLink.type = 'text/css';
+
+    // Set the appropriate highlight.js theme based on the selected theme
+    if (themeName === 'dark') {
+      highlightLink.href = '../../themes/highlight-dark.css';
+    } else {
+      highlightLink.href = '../../themes/highlight-light.css';
+    }
+
+    // Insert the highlight.js theme link after the main theme link
+    themeLink.parentNode?.insertBefore(highlightLink, themeLink.nextSibling);
   } else {
     console.log('user themes not yet supported!');
   }
